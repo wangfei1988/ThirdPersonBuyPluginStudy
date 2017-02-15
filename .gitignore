@@ -1,4 +1,8 @@
 ﻿#忽略ThirdPersonBuy文件夹 
-/ThirdPersonBuy 
+*.*
+/Library 
 #但是保留 
-!/ThirdPersonBuy/Assets/_CharacterControllerGP/Scripts/
+!*.cs
+!*.sln
+!*.csproj
+
