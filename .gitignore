@@ -1,0 +1,4 @@
+#忽略ThirdPersonBuy文件夹 
+/ThirdPersonBuy 
+#但是保留 
+!/ThirdPersonBuy/Assets/*/Scripts
