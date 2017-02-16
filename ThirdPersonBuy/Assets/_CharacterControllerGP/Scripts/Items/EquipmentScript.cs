@@ -5,49 +5,51 @@ namespace MLSpace
 {
     /// <summary>
     /// class to keep track of all equipment bones
+    /// 加上System.Serializable 就可以在inspector面板显示
     /// </summary>
     [System.Serializable]
     public class EquipmentBones
     {
+        /// 仅仅右手武器  右手武器+盾牌  双手武器
         /// <summary>
-        /// transform holding one handed weapon not wielding
+        /// transform holding one handed weapon not wielding。 单手武器--右手，未拔出时，放在左腿上
         /// </summary>
         public Transform weapon1H_rest_bone;
 
         /// <summary>
-        /// transform holding one handed weapon wielding
+        /// transform holding one handed weapon wielding 单手武器--右手，拔出时
         /// </summary>
         public Transform weapon1H_wield_bone;
-
         /// <summary>
         /// transform holding shield not wielding
         /// </summary>
-        public Transform shield_rest_bone;
-
+        public Transform shield_rest_bone;  //单手武器  盾牌  未装备时--背上
         /// <summary>
         /// transform holding shield wielding
         /// </summary>
-        public Transform shield_wield_bone;
+        public Transform shield_wield_bone; //单手武器   装备时--左手上
+
+
 
         /// <summary>
         /// transform holding two handed weapon not wielding
         /// </summary>
-        public Transform weapon2H_rest_bone;
+        public Transform weapon2H_rest_bone; //双手武器---未拔出时在后备
 
         /// <summary>
         /// transform holding two handed weapon wielding
         /// </summary>
-        public Transform weapon2H_wield_bone;
+        public Transform weapon2H_wield_bone; //双手武器 装备时---右手上， 左手自动计算。注意剑柄长度最好都一样
 
-        public Transform quiver_rest_bone;
+        public Transform quiver_rest_bone; //箭筒--在背上
 
-        public Transform bow_rest_bone;
+        public Transform bow_rest_bone; //弓放在背上
 
-        public Transform bow_wield_bone;
+        public Transform bow_wield_bone;//弓装备时--左手上
 
-        public Transform arrow_bone;
+        public Transform arrow_bone;//右手拿箭，在右手何处
 
-        public Transform secondary1H_rest_bone;
+        public Transform secondary1H_rest_bone;//单手武器--左手 在右腿上
 
         public Transform secondary1H_wield_bone;
 
@@ -60,6 +62,7 @@ namespace MLSpace
     /// </summary>
     public class EquipmentScript : MonoBehaviour
     {
+        //总共可以同时背上放置6个武器   WeaponOneHanded右手武器
         public enum EquipmentSlot : int { WeaponOneHanded, Shield, WeaponTwoHanded, Ranged, Quiver, SecondaryOneHanded };
 
         /// <summary>
@@ -67,8 +70,8 @@ namespace MLSpace
         /// </summary>
         public class ItemInfo
         {
-            public InventoryItem item = null;
-            public bool wielded = false;
+            public InventoryItem item = null;//物品
+            public bool wielded = false;//是否拿在手上使用
 
             public ItemInfo (InventoryItem _item, bool _wielded)
             {
@@ -79,7 +82,7 @@ namespace MLSpace
             public ItemInfo (InventoryItem _item)
             {
                 item = _item;
-                wielded = false;
+                wielded = false;//没有放在手上使用
             }
         }
 
@@ -90,10 +93,8 @@ namespace MLSpace
         public EquipmentBones bones;         
 
         private Animator m_Animator;              // reference to animator
-        private ItemInfo[] m_Items;               // equipment item array for convenience
-        private bool m_Initialized = false;       // is class initialized ?
-
-        
+        private ItemInfo[] m_Items;               // equipment item array for convenience 所有身上的武器
+        private bool m_Initialized = false;       // is class initialized ?      
 
 
         /// <summary>
@@ -237,7 +238,7 @@ namespace MLSpace
         }
 
         /// <summary>
-        /// set secondary weapon to be primary
+        /// set secondary weapon to be primary  左手和右手武器互换
         /// </summary>
         public void switchPrimaryWithSecondary()
         {
@@ -299,7 +300,7 @@ namespace MLSpace
             }
 #endif
 
-            _updateWeapon1H();
+            _updateWeapon1H();//保持和对应的骨骼旋转位移一致。 因为这个并未绑定在骨骼上
             _updateShield();
             _updateWeapon2H();
             _updateBow();
@@ -665,7 +666,8 @@ namespace MLSpace
             if (!item.equipped) return;
             switch (item.itemType)
             {
-                case InventoryItemType.Shield: unsetShield(); break;
+                case InventoryItemType.Shield:
+                    unsetShield(); break;
                 case InventoryItemType.Weapon1H:
                     if(item == currentWeapon1H)
                     {
@@ -852,7 +854,7 @@ namespace MLSpace
 
 
         /// <summary>
-        /// updare current one handed weapon transform
+        /// updare current one handed weapon transform 都是调节武器位置
         /// </summary>
         private void _updateWeapon1H()
         {

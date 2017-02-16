@@ -693,7 +693,7 @@ namespace MLSpace
                                 m_Stats.setCurrentAttackValue(
                                     meleeItem.damage,
                                     meleeItem.range,
-                                    m_Stats.attackSpeed);
+                                    m_Stats.DefaultAttackSpeed);
                                 distanceToTarget = meleeItem.range * 0.75f;
 
 
@@ -763,7 +763,7 @@ namespace MLSpace
                                 m_Stats.setCurrentAttackValue(
                                     shieldItem.damage,
                                     shieldItem.range,
-                                    m_Stats.attackSpeed);
+                                    m_Stats.DefaultAttackSpeed);
                                 distanceToTarget = shieldItem.range * 0.75f;
                             }
 
@@ -816,7 +816,7 @@ namespace MLSpace
                             m_Stats.setCurrentAttackValue(
                                     meleeItem.damage,
                                     meleeItem.range,
-                                    m_Stats.attackSpeed);
+                                    m_Stats.DefaultAttackSpeed);
                             distanceToTarget = meleeItem.range * 0.75f;
 
                             if (meleeItem.OnTake != null)
@@ -834,7 +834,7 @@ namespace MLSpace
                         if (m_EquipmentScript.currentBow.OnTake != null)
                             m_EquipmentScript.currentBow.OnTake();
                         int damage = m_EquipmentScript.currentBow.damage + m_EquipmentScript.currentQuiver.damage;
-                        m_Stats.setCurrentAttackValue(damage, m_Stats.weaponReach, m_Stats.currentAttackSpeed);
+                        m_Stats.setCurrentAttackValue(damage, m_Stats.defaultWeaponReach, m_Stats.currentAttackSpeed);
                     }
                     break;
                 case InventoryItemType.QuiverArrow:
@@ -845,7 +845,7 @@ namespace MLSpace
                         if (q)
                         {
                             int damage = m_EquipmentScript.currentBow.damage + q.damage;
-                            m_Stats.setCurrentAttackValue(damage, m_Stats.weaponReach, m_Stats.attackSpeed);
+                            m_Stats.setCurrentAttackValue(damage, m_Stats.defaultWeaponReach, m_Stats.DefaultAttackSpeed);
                         }
                     }
 
@@ -3272,7 +3272,7 @@ namespace MLSpace
             m_Stats.setCurrentAttackValue(
                 m_EquipmentScript.currentWeapon1H.damage,
                 m_EquipmentScript.currentWeapon1H.range,
-                m_Stats.attackSpeed);
+                m_Stats.DefaultAttackSpeed);
             distanceToTarget = m_EquipmentScript.currentWeapon1H.range * 0.75f;
             m_RightArmOccupation = ArmOccupation.FromReachWeapon1H;
         }
@@ -3443,7 +3443,7 @@ namespace MLSpace
                 currentPrimaryWeapon = m_EquipmentScript.currentShield;
                 m_Stats.setCurrentAttackValue(m_EquipmentScript.currentShield.damage, 
                     m_EquipmentScript.currentShield.range, 
-                    m_Stats.attackSpeed);
+                    m_Stats.DefaultAttackSpeed);
                 distanceToTarget = m_EquipmentScript.currentShield.range * 0.75f;
             }
             else 
@@ -3643,7 +3643,7 @@ namespace MLSpace
             m_Stats.setCurrentAttackValue(
                 m_EquipmentScript.currentWeapon2H.damage,
                 m_EquipmentScript.currentWeapon2H.range,
-                m_Stats.attackSpeed);
+                m_Stats.DefaultAttackSpeed);
             distanceToTarget = m_EquipmentScript.currentWeapon2H.range * 0.75f;
             m_Animator.SetBool(HashIDs.UnarmedBool, false);
 
@@ -3833,8 +3833,8 @@ namespace MLSpace
 
             m_Stats.setCurrentAttackValue(
                     damage,
-                    m_Stats.weaponReach,
-                    m_Stats.attackSpeed);
+                    m_Stats.defaultWeaponReach,
+                    m_Stats.DefaultAttackSpeed);
 
             m_EquipmentScript.wieldBow();
             _startTakingArrow();
@@ -4463,7 +4463,7 @@ namespace MLSpace
                     m_Stats.setCurrentAttackValue(
                         currentPrimaryWeapon.damage,
                         currentPrimaryWeapon.range,
-                        m_Stats.attackSpeed);
+                        m_Stats.DefaultAttackSpeed);
                     distanceToTarget = currentPrimaryWeapon.range * 0.75f;
                 }
             }
@@ -4474,7 +4474,7 @@ namespace MLSpace
                     m_Stats.setCurrentAttackValue(
                         currentSecondaryWeapon.damage,
                         currentSecondaryWeapon.range,
-                        m_Stats.attackSpeed);
+                        m_Stats.DefaultAttackSpeed);
                     distanceToTarget = currentSecondaryWeapon.range * 0.75f;
                 }
             }

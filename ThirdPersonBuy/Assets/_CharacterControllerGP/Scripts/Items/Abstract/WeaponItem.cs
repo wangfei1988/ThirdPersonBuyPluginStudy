@@ -15,7 +15,7 @@ namespace MLSpace
         public int damage = 1;
 
         /// <summary>
-        ///  range of weapon
+        ///  range of weapon 武器攻击范围（武器长度）
         /// </summary>
         public float range = 1.5f;
 

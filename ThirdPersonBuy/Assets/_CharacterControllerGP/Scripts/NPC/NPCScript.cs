@@ -468,7 +468,7 @@ namespace MLSpace
             _calculate_path(ref m_Move);
 
             m_Move.y = 0.0f;
-            m_Move *= m_Stats.moveSpeed;
+            m_Move *= m_Stats.DefaultMoveSpeed;
             m_BodyLookDir = m_Move;
             if (takingHit)
             {
@@ -566,7 +566,7 @@ namespace MLSpace
 
                 m_Move.y = 0.0f;
                 float mag = m_Move.magnitude;
-                float curSpeed = m_Stats.moveSpeed;
+                float curSpeed = m_Stats.DefaultMoveSpeed;
                 if (mag < 0.25f) curSpeed = 0.0f;
                 m_Move.Normalize();
                 m_Move *= curSpeed;
@@ -626,7 +626,7 @@ namespace MLSpace
 
             m_Move.y = 0.0f;
             float mag = m_Move.magnitude;
-            float curSpeed = m_Stats.moveSpeed;
+            float curSpeed = m_Stats.DefaultMoveSpeed;
             if (mag < 0.25f) curSpeed = 0.0f;
             m_Move.Normalize();
             m_Move *= curSpeed;

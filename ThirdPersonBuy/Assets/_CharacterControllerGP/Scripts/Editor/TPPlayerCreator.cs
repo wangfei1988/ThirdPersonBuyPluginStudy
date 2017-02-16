@@ -821,12 +821,12 @@ namespace MLSpace
             Stats stats = character.GetComponent<Stats>();
             if (!stats) stats = Undo.AddComponent<Stats>(character);
 
-            stats.attackSpeed = 1.2f;
+            stats.DefaultAttackSpeed = 1.2f;
             stats.maxHealth = initialHealth;
-            stats.damage  = initialDamage;
+            stats.defaultDamage  = initialDamage;
             stats.attack = initialAttackValue;
             stats.defence = initialDefenceValue;
-            stats.moveSpeed = 1.0f;
+            stats.DefaultMoveSpeed = 1.0f;
         } 
 
         void _createEquipmentScript()

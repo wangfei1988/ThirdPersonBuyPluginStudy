@@ -367,10 +367,10 @@ namespace MLSpace
             if (!stats) stats = Undo.AddComponent<Stats>(character);
 
             stats.maxHealth = initialHealth;
-            stats.damage = initialDamage;
+            stats.defaultDamage = initialDamage;
             stats.attack = initialAttackValue;
             stats.defence = initialDefenceValue;
-            stats.moveSpeed = moveSpeed;
+            stats.DefaultMoveSpeed = moveSpeed;
         }
 
     }

@@ -420,7 +420,7 @@ namespace MLSpace
                     bodyDirection = transform.forward;
                 }
             }
-            m_TopDownPlayer.character.moveSpeedMultiplier = m_Stats.moveSpeed;
+            m_TopDownPlayer.character.moveSpeedMultiplier = m_Stats.DefaultMoveSpeed;
 
             if (dive)
             {
@@ -646,7 +646,7 @@ namespace MLSpace
                     bodyDirection = transform.forward;
                 }
             }
-            m_TopDownPlayer.character.moveSpeedMultiplier = m_Stats.moveSpeed;
+            m_TopDownPlayer.character.moveSpeedMultiplier = m_Stats.DefaultMoveSpeed;
 
             if (dive)
             {

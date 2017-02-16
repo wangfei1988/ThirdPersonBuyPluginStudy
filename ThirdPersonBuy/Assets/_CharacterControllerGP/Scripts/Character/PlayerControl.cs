@@ -493,7 +493,7 @@ namespace MLSpace
                 _attack_combo_end();
             }
 
-            m_Character.moveSpeedMultiplier = m_Stats.moveSpeed;
+            m_Character.moveSpeedMultiplier = m_Stats.DefaultMoveSpeed;
 
             // setup trigger parameters
             bool enableTriggerUse = !block && !takingHit && !m_Attack_combo_started;
@@ -695,7 +695,7 @@ namespace MLSpace
                 m_ThirdPersonPlayer.strafing = m_Aiming;
             }
 
-            m_Character.moveSpeedMultiplier = m_Stats.moveSpeed;
+            m_Character.moveSpeedMultiplier = m_Stats.DefaultMoveSpeed;
 
             // setup trigger parameters
             bool enableTriggerUse = !block && !takingHit && !m_Attack_combo_started && !m_Aiming;

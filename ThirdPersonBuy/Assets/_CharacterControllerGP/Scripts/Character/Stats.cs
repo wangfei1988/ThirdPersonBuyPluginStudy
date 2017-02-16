@@ -15,32 +15,32 @@ namespace MLSpace
         public int maxHealth = 100;
 
         /// <summary>
-        /// reach of weapon 
+        /// reach of weapon 默认武器攻击范围（默认武器长度）  
         /// </summary>
         [Tooltip("Default reach of attack.") ]
-        public float weaponReach = 1.5f;
+        public float defaultWeaponReach = 1.5f;
 
         /// <summary>
-        /// user's damage
+        /// user's damage 击中某个人物，对该任务造成的伤害值
         /// </summary>
         [Tooltip ("User's default damage.") ]
-        public int damage = 10;
+        public int defaultDamage = 10;
 
         /// <summary>
-        /// user's attack speed
+        /// user's attack speed 默认攻击动画播放速度
         /// </summary>
         [Tooltip ("User's default attack speed.") ]
-        public float attackSpeed = 1.0f;
+        public float DefaultAttackSpeed = 1.0f;
 
         /// <summary>
-        /// user move speed multiplier
+        /// user move speed multiplier。 默认移动速度，这个和移动动画的播放速度无关，指的是对象的的位移变化速度
         /// </summary>
         [Tooltip("User's default move speed multiplier.")]
-        public float moveSpeed = 1.0f;
+        public float DefaultMoveSpeed = 1.0f;
 
         /// <summary>
-        /// user attack value
-        /// added to damage given
+        /// user attack value 
+        /// added to damage given 击中某个人物，对该任务造成的额外伤害值
         /// </summary>
         [Tooltip ("User's attack value. Added to damage given.")]
         public int attack = 0;
@@ -75,7 +75,7 @@ namespace MLSpace
         public int currentDamage { get { return m_CurrentDamage; } }
 
         /// <summary>
-        /// gets current attack speed
+        /// gets current attack speed 当前攻击动画播放速度
         /// </summary>
         public float currentAttackSpeed { get { return m_CurrentAttackSpeed; } }
 
@@ -83,9 +83,9 @@ namespace MLSpace
         void Awake()
         {
             m_CurrentHealth = maxHealth;
-            m_CurrentWeaponReach = weaponReach;
-            m_CurrentDamage = damage;
-            m_CurrentAttackSpeed = attackSpeed ;
+            m_CurrentWeaponReach = defaultWeaponReach;
+            m_CurrentDamage = defaultDamage;
+            m_CurrentAttackSpeed = DefaultAttackSpeed ;
         }
 
         /// <summary>
@@ -93,9 +93,9 @@ namespace MLSpace
         /// </summary>
         public void resetAttackValues()
         {
-            m_CurrentDamage = damage;
-            m_CurrentWeaponReach = weaponReach;
-            m_CurrentAttackSpeed = attackSpeed;
+            m_CurrentDamage = defaultDamage;
+            m_CurrentWeaponReach = defaultWeaponReach;
+            m_CurrentAttackSpeed = DefaultAttackSpeed;
         }
 
         /// <summary>
@@ -120,6 +120,7 @@ namespace MLSpace
 
         /// <summary>
         /// set current damage, weapon reach and attack speed
+        /// 当切换不同武器时调用。
         /// </summary>
         /// <param name="_damage">new damage</param>
         /// <param name="_reach">new weapon reach</param>
@@ -127,7 +128,7 @@ namespace MLSpace
         public void setCurrentAttackValue(int _damage,float _reach,float _attackSpeed)
         {
             m_CurrentDamage = _damage;
-            m_CurrentWeaponReach = _reach;
+            m_CurrentWeaponReach = _reach; //当前武器可攻击范围（长度）
             m_CurrentAttackSpeed = _attackSpeed;
         }
 

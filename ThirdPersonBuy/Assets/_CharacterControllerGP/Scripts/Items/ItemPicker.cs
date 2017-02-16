@@ -44,10 +44,15 @@ namespace MLSpace
         private Collider m_CurrCollider = null;           // current hit collider
         private InventoryItem m_CurrItem = null;          // current hit item
         private bool m_Highlighted = false;                 // is picking ray over an item
-        private List<Shader> m_OriginalShaders = new List<Shader>();        // list of original shaders on highlighted object
-        private GameObject m_CurrObject = null;                             // current highlighted object 
-        private List<Renderer> m_CurrentRenderers = new List<Renderer>();   // original renderers on highlighted object
-
+        //是否要高亮显示
+        private GameObject m_CurrObject = null;                            
+        // current highlighted object 当前帧高亮显示的物体，只有一个 
+        private List<Shader> m_OriginalShaders = new List<Shader>();
+        // list of original shaders on highlighted object  
+        //当前高亮显示的物体上的所有的Render对应的shader
+        private List<Renderer> m_CurrentRenderers = new List<Renderer>();   
+        // original renderers on highlighted object
+        //当前高亮显示的物体上的所有的Render
 
         /// <summary>
         /// returns true if item is ready for picking
@@ -117,11 +122,13 @@ namespace MLSpace
 
         /// <summary>
         /// method fired on switching highlighted items
+        /// 切换待选择的物体
         /// </summary>
         void OnItemSwitch()
         {
             for (int i = 0; i < m_CurrentRenderers.Count; i++)
             {
+
                 m_CurrentRenderers[i].material.shader = m_OriginalShaders[i];
             }
             m_OriginalShaders.Clear();
@@ -137,12 +144,11 @@ namespace MLSpace
         {
 #if DEBUG_INFO
             if (!DisplayUI) { Debug.LogError("object cannot be null < " + this.ToString() + " >");return; }
+            //只有玩家需要捡取，有高亮，捡取动画等
             if (!m_PlayerCtrl) { /*Debug.LogError("object cannot be null < " + this.ToString() + " >");*/return; }
 #endif
             DisplayUI.text = "";
-            m_Highlighted = false;
-
-            
+            m_Highlighted = false;            
 
             if (m_PlayerCtrl.disableInput ||
                 m_PlayerCtrl.attackComboUnderway ||
@@ -154,6 +160,7 @@ namespace MLSpace
             RaycastHit hit;
             if(Physics.Raycast (ray, out hit, float.MaxValue ,mask))
             {
+                //从摄像机发出射线，碰撞到一个Item
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Item"))
                 {
                     float distance = Vector3.Distance(hit.point, m_PlayerCtrl.position);
@@ -192,10 +199,8 @@ namespace MLSpace
                             }
                         }
 
-
-
-                        m_Highlighted = true;
-                        if (m_CurrCollider == hit.collider)
+                        m_Highlighted = true;//碰撞到了一个物体，当然要高亮
+                        if (m_CurrCollider == hit.collider)//m_CurrCollider上一帧射线碰撞的Item对应的Collider
                         {
                             DisplayUI.text = "Pick Up " + m_CurrItem.itemName;
                             if (m_CurrItem is MeleeWeaponItem && (m_CurrItem as MeleeWeaponItem).itemType == InventoryItemType.Weapon1H)
@@ -213,9 +218,8 @@ namespace MLSpace
                             }
 
                         }
-                        else
+                        else  //这个if和else之间可以合并
                         {
-
                             Rigidbody attachedBody = hit.collider.attachedRigidbody;
                             InventoryItem item = attachedBody.GetComponent<InventoryItem>();
                             if (item)
@@ -227,17 +231,17 @@ namespace MLSpace
                                     m_PlayerCtrl.setNewItem(item);
                             }
 #if DEBUG_INFO
-                        else
-                        {
-                            Debug.LogWarning("Cannot find InventoryItem component! " + attachedBody.name);
-                        }
+                            else
+                            {
+                                Debug.LogWarning("Cannot find InventoryItem component! " + attachedBody.name);
+                            }
 #endif
                         }
                     }
                 }
             }
 
-            if (!m_Highlighted)
+            if (!m_Highlighted) //射线没有碰撞到Item。取消高亮
             {
                 if (m_CurrObject && m_OriginalShaders.Count > 0)
                 {
