@@ -7,7 +7,7 @@ namespace MLSpace
     /// <summary>
     /// delegate used for notifying attack hit
     /// </summary>
-    /// <param name="attacker">attacking character</param>
+    /// <param name="attacker">attacking character。 current characte is attacked by attacker</param>
     /// <param name="attackType">attack type</param>
     /// <param name="attackSource">attack source ( primary or secondary weapon) - or other</param>
     /// <param name="blocking">ref - assign true if attack is blocked</param>
@@ -28,6 +28,7 @@ namespace MLSpace
     /// <summary>
     /// base player class
     /// controls camera, head ik , replacing animation clips
+    /// Player和TPCharacter不是继承关系，而是平级引用关系
     /// </summary>
     [RequireComponent(typeof(TPCharacter), typeof(RagdollManager))]
     public abstract class Player : MonoBehaviour
@@ -55,12 +56,15 @@ namespace MLSpace
         protected bool m_Strafing = false;                // player strafe flag
         protected bool m_Initialized = false;             // is component initialized ?
 
-        protected Vector3 m_CurrentHeadPos = Vector3.zero;    // current head look at position
-        protected Vector3 m_HeadStartPos, m_HeadEndPos;       // head start and end lerp position for smooth transition
+        protected Vector3 m_CurrentHeadPos = Vector3.zero;    // current head look at position 当前头看向哪个方向
+        protected Vector3 m_HeadStartPos, m_HeadEndPos;
+        // head start and end lerp position for smooth transition
+        //转头时时，从m_HeadStartPos 转向m_HeadEndPos
         protected float m_HeadSwitchTime = 0.0f;              // head lerp time
         protected float m_HeadSwitchMaxTime = 0.25f;          // head lerp max time
         protected float m_HeadLookSpeed = 1.0f;               // head lerp speed
-        protected bool m_LerpHeadPosition = false;            // lerp head look at different position flag
+        protected bool m_LerpHeadPosition = false;           
+        // lerp head look at different position flag 当前是否正在砖头当中
         protected bool m_Switch2CameraLook = false;           // switch head to look towards camera flag ( lerp to )
         protected bool m_LookTowardsCamera = true;            // look to camera direction flag
         protected TPCharacter.IKMode lookIkMode = TPCharacter.IKMode.Head; // current head ik mode
@@ -71,7 +75,7 @@ namespace MLSpace
         protected Dictionary<AnimatorControllerParameter, object> m_SavedParams =
                 new Dictionary<AnimatorControllerParameter, object>();                  // saved animator parameters on disable
         private List<AnimationClipReplacementInfo> m_OriginalClips =
-    new List<AnimationClipReplacementInfo>();                       // original animation character clips
+        new List<AnimationClipReplacementInfo>();                       // original animation character clips
 
 
         /// <summary>

@@ -50,12 +50,12 @@ namespace MLSpace
         /// Control player
         /// </summary>
         /// <param name="horiz">horizonal axis value</param>
-        /// <param name="vert">vertical axis value</param>
+        /// <param name="vert">vertical axis value 这两个是摄像机</param>
         /// <param name="jump">jump flag</param>
         /// <param name="runToggle">toggle walk / run mode</param>
         /// <param name="dive">dive roll flag</param>
         /// <param name="crouch">crouch flag</param>
-        /// <param name="bodyLookDirection">body look direction</param>
+        /// <param name="bodyLookDirection">body look direction，我们往hv方向移动，那么body目标方向就是hv</param>
         /// <param name="diveDirection">dive roll direction</param>
         public override void control(float horiz, float vert, bool jump, bool runToggle, bool dive, bool crouch,
             Vector3? bodyLookDirection = null, Vector3? diveDirection = null, float? side = null)
@@ -100,6 +100,7 @@ namespace MLSpace
                 return;
             }
 #endif
+            //只要受到ragdoll的影响（被击中或者爬楼梯或者摔下） 就不可以移动跳跃翻滚
             if (m_Ragdoll.state != RagdollManager.RagdollState.Animated) return;
 
             if (m_DisableInput)
@@ -123,31 +124,31 @@ namespace MLSpace
             float walkMultiplier = runToggle ? 1f : 0.5f;
             move *= walkMultiplier;
 
-            if (lookTowardsCamera)
+            if (lookTowardsCamera) //人头（人眼）前方和摄像机保持一致
             {
-                if (m_LookTowardsCamera)
+                if (m_LookTowardsCamera) //m_LookTowardsCamera 人头是否已经转和目标摄像机一致了
                 {
+                    //当前头的前方朝向哪个方向
                     m_CurrentHeadPos = m_Camera.transform != null
                       ? transform.position + m_Camera.transform.forward * 100
                       : transform.position + transform.forward * 100;
                 }
                 else
                 {
-                    if (m_LerpHeadPosition)
+                    if (m_LerpHeadPosition) //当前是否正在砖头
                     {
                         if (m_Switch2CameraLook)
                         {
-
                             m_HeadEndPos = m_Camera.transform != null
                                   ? transform.position + m_Camera.transform.forward * 100
                                   : transform.position + transform.forward * 100;
-
                         }
 
                         m_HeadSwitchTime += Time.deltaTime * m_HeadLookSpeed;
                         float lValue = m_HeadSwitchTime / m_HeadSwitchMaxTime;
                         lValue = Mathf.Clamp01(lValue);
                         m_CurrentHeadPos = Vector3.Lerp(m_HeadStartPos, m_HeadEndPos, lValue);
+                        //逐步修改m_CurrentHeadPos
                         if (m_HeadSwitchMaxTime < m_HeadSwitchTime)
                         {
                             m_LerpHeadPosition = false;
@@ -160,9 +161,9 @@ namespace MLSpace
                     }
                 }
             }
-            else
+            else  //人头（人眼）前方不需要和摄像机保持一致
             {
-                if (m_LerpHeadPosition)
+                if (m_LerpHeadPosition) //头要和摄像机前方保持一致
                 {
                     if (m_Switch2CameraLook)
                     {
@@ -194,8 +195,9 @@ namespace MLSpace
 //            Debug.DrawLine(headPos, m_HeadEndPos, Color.green);
 //#endif
 
-            Vector3 bodyLookDir = move;
-            if (bodyLookDirection.HasValue)
+            Vector3 bodyLookDir = move; //move往哪个方向移动
+            //上面是人眼下面是人身体，人身体方向必须和移动方向一致
+            if (bodyLookDirection.HasValue) 
             {
                 bodyLookDir = bodyLookDirection.Value;
             }

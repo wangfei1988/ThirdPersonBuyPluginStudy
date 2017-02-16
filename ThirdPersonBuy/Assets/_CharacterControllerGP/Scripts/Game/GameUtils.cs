@@ -17,7 +17,7 @@ namespace MLSpace
         /// <param name="perHitAdditionalDamage"></param>
         public static int CalculateDamage(IGameCharacter defender, IGameCharacter attacker, bool blocking/*, int damage*/)
         {
-            if (blocking) return 0;
+            if (blocking) return 0; //blocking 伤害为0
             int damageAccum = attacker.stats.currentDamage   + attacker.stats.attack;
             int damageReduced = Mathf.Max((damageAccum - defender.stats.defence), 1);
             defender.stats.decreaseHealth(damageReduced);

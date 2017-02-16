@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace MLSpace
 {
     /// <summary>
-    /// current weapon modes
+    /// current weapon modes  单手可配盾  双手单武器不可配盾  弓箭  双手双武器
     /// </summary>
     public enum WeaponMode { Weapon1HShield, Weapon2H, Bow, DualWield };
 
@@ -22,7 +22,7 @@ namespace MLSpace
     public enum ArmOccupation
     {
         None,
-        ToReachWeapon1H,        // reach to take / sheathe weapon 1H
+        ToReachWeapon1H,        // reach to take / sheathe插入 weapon 1H
         ToReachWeapon2H,        // reach to take / sheathe weapon 2H
         ToReachShield,          // reach to take / sheathe shield
         ToReachSecondary,       // reach to take / sheathe secondary weapon 1H
@@ -42,6 +42,7 @@ namespace MLSpace
 
         /// <summary>
         /// attack collider and rigid body for checking obstacles upon attack
+        /// 打扫
         /// </summary>
         [Tooltip("Attack collider and rigid body for checking obstacles.")]
         public Rigidbody attackSweepBody;
@@ -80,6 +81,7 @@ namespace MLSpace
 
         /// <summary>
         /// additional spine Y rotation used in aiming ( bow )
+        /// 腿总是往前走，只是身体可以旋转
         /// </summary>
         [Tooltip("Additional spine Y rotation used in aiming ( bow )")]
         public float additionalSpineYrotation = 52.0f;
@@ -165,7 +167,7 @@ namespace MLSpace
         protected WeaponMode m_CurrentWeaponMode = WeaponMode.Weapon1HShield;     // current weapon mode
 
         protected bool m_Attack_combo_started = false;                    // attack combo started flag
-        protected bool m_InCombat = false;                                // is player in combat ?
+        protected bool m_InCombat = false;                                // is player in combat ? 是否处在主动攻击状态
         protected bool m_BreakCombo = true;                               // break combo flag
         protected int m_CurrentAttackType = 0;                            // current attack type ( used for hit reactions )
         protected Vector3 m_Direction2target;                             // direction to current npc
@@ -180,7 +182,9 @@ namespace MLSpace
         // weapons system helpers
         protected bool m_SetSecondaryAsPrimary = false;                           // set primary weapon as secondary if primary is missing
         protected const float locomotionTransitionSpeed = 0.151f;                 // transition time from default to unarmed locomotion - and vice versa
-        protected bool m_SwitchingItemState = false;                              // is player in any of reach weapon transition animator state 
+        protected bool m_SwitchingItemState = false;                             
+        // is player in any of reach weapon transition animator state
+        //是否处于武器切换状态 
         protected ArmOccupation m_LeftArmOccupation = ArmOccupation.None;         // left arm occupation ( swithcing items motions )
         protected ArmOccupation m_RightArmOccupation = ArmOccupation.None;        // right arm occupation ( swithcing items motions )   
 
@@ -207,10 +211,10 @@ namespace MLSpace
             TPCharacter.MovingMode.RotateToDirection;                           // keep track of move mode if need to reset
         protected bool m_PrevStrafing = false;                                  // keep track of strafe mode if need to reset
 
-        // rotations to attack helpers
+        // rotations to attack helpers  攻击时的旋转
         protected float m_AttackRotTime = 0.25f;                      // attack rotation max time
         protected float m_AttackRotTimer = 0.0f;                      // attack rotation timer
-        protected bool m_DoAttackRotation = false;                    // attack rotation underway
+        protected bool m_DoAttackRotation = false;                    // attack rotation underway 进行中
         protected Quaternion m_AttackStartRot = Quaternion.identity;  // attack start rotation
         protected Quaternion m_AttackEndRot = Quaternion.identity;    // attack end rotation
 
@@ -481,11 +485,13 @@ namespace MLSpace
         {
             if (Time.timeScale == 0.0f) return;
             // if in ragdoll - just return and do nothing
+            //（被攻击或者高出摔下）处在ragdoll状态，无法控制。
             if (m_Player.ragdoll.state != RagdollManager.RagdollState.Animated)
             {
-                m_InCombat = false;
+                m_InCombat = false; //不可能处于战斗状态。
                 return;
             }
+            //动画分成4层，全身，上半身  左手，右手
 
             AnimatorStateInfo upperBodyLayer = m_Animator.GetCurrentAnimatorStateInfo(1);
             AnimatorStateInfo leftArmLayer = m_Animator.GetCurrentAnimatorStateInfo(2);
@@ -538,6 +544,7 @@ namespace MLSpace
                 }
                 float rVal = m_AttackRotTimer / m_AttackRotTime;
                 transform.rotation = Quaternion.Slerp(m_AttackStartRot, m_AttackEndRot, rVal);
+                //攻击时旋转，从m_AttackStartRot 逐步插值旋转到m_AttackEndRot
             }
 
             // using crouch flag for releasing ledge
@@ -565,6 +572,7 @@ namespace MLSpace
             }
 #endif
             m_Character.overridePhysicMaterial(null);
+            //攻击（击中对象） 防御   被击中
             if (m_Attack_combo_started || blocking || takingHit)
             {
                 m_Character.overridePhysicMaterial(m_Materials.zeroFrictionMaterial);
@@ -960,7 +968,7 @@ namespace MLSpace
         }
 
         /// <summary>
-        /// start drawing or sheathing current weapon set
+        /// start drawing or sheathing 将（刀、剑等）插入鞘 current weapon set
         /// </summary>
         public virtual void toggleCurrentWeapon()
         {
@@ -976,7 +984,7 @@ namespace MLSpace
 
             if (m_EquipmentScript.weaponInHand)
             {
-                sheatheCurrentWeapon();
+                sheatheCurrentWeapon(); 
             }
             else
             {

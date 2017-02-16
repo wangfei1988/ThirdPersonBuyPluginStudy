@@ -19,6 +19,7 @@ namespace MLSpace
 {
     /// <summary>
     /// class that controls third person player in combat framework system
+    /// Player的控制器
     /// </summary>
     [RequireComponent(typeof(PlayerThirdPerson))]
     public class PlayerControl : PlayerControlBase
@@ -55,6 +56,7 @@ namespace MLSpace
 
         /// <summary>
         /// return true if attack combo is started otherway false
+        /// 已经击中某个对象，开始Combo
         /// </summary>
         public bool attackComboUnderway
         {
@@ -299,7 +301,7 @@ namespace MLSpace
             m_Animator.SetFloat(HashIDs.AttackSpeedFloat /*"pAttackSpeed"*/, m_Stats.currentAttackSpeed);
             bool onLedge = m_Animator.GetBool(/*"pOnLedge"*/HashIDs.OnLedgeBool);
 
-            if (m_PrimaryTargetNPC != null)
+            if (m_PrimaryTargetNPC != null) //有攻击目标
             {
                 m_Direction2target = m_PrimaryTargetNPC.position - transform.position;
                 m_Direction2target.y = 0.0f;
@@ -307,16 +309,18 @@ namespace MLSpace
             }
 
             // check if secondary weapon is drawn but primary is not.
-            // if so - draw primary
+            // if so - draw primary  双手双武器  currentWeapon1H第一武器 currentSecondary第二武器
+            //双手双武器就是两个单手武器，都在腿上
             if (m_CurrentWeaponMode == WeaponMode.DualWield)
             {
                 if (m_EquipmentScript.currentWeapon1H &&
                     m_EquipmentScript.currentSecondary)
                 {
                     if (!m_EquipmentScript.weaponInHand1H &&
-                            m_EquipmentScript.secondaryWeaponInHand)
+                            m_EquipmentScript.secondaryWeaponInHand) 
+                    //这里如果第二武器在身上，并且第一武器没有装备
                     {
-                        if (!m_SwitchingItemState)
+                        if (!m_SwitchingItemState) 
                         {
 #if ADDITIONAL_DEBUG_INFO
                             Debug.LogWarning("Secondary item alone eqipped - drawing primary.");
@@ -344,24 +348,27 @@ namespace MLSpace
             if (!m_ThirdPersonPlayer.disableInput)
             {
                 bool switchEquipmentCondition = !m_SwitchingItemState && !m_Attack_combo_started && !onLedge && !m_ThirdPersonPlayer.triggerActive;
+                //是否允许切换武器
                 bool attackBlockCondition = !m_SwitchingItemState && !m_ThirdPersonPlayer.triggerActive;
+                //是否允许攻击格挡
 
                 if (Input.GetButtonDown("ToggleWeapon") && switchEquipmentCondition)
                 {
-                    toggleCurrentWeapon();
+                    toggleCurrentWeapon(); //拔出当前武器或者收起当前武器
                 }
                 if (Input.GetButtonDown("DrawWeapon") && switchEquipmentCondition)
                 {
-                    takeCurrentWeapon();
+                    takeCurrentWeapon();//这个100%是拔出武器
                 }
                 if (Input.GetButtonDown("SheatheWeapon") && switchEquipmentCondition)
                 {
-                    sheatheCurrentWeapon();
+                    sheatheCurrentWeapon();//这个100%是收起武器
                 }
                 if (Input.GetButtonDown("Drop") && switchEquipmentCondition)
                 {
                     dropAllEquipment();
                 }
+                //下面的切换模式不会拔出武器，也不会收起武器
                 if (Input.GetButtonDown("WeaponShieldMode") && switchEquipmentCondition)
                 {
                     switchWeaponMode(WeaponMode.Weapon1HShield);
@@ -383,7 +390,7 @@ namespace MLSpace
                 {
                     // if taking hit
                     // allow dive only after halfish of taking hit animation is passed
-                    bool halfHitAnimationPassed = true;
+                    bool halfHitAnimationPassed = true; //被击中动画已经播放一半以上
                     if (takingHit)
                     {
                         AnimatorStateInfo asi = m_Animator.GetCurrentAnimatorStateInfo(0);
@@ -403,10 +410,13 @@ namespace MLSpace
                 Vector3 rightDir = transform.right;
                 if (m_ThirdPersonPlayer.m_Camera.transform != null)
                 {
+                    //那个方向是前方,往前移动是往哪个方向移动
                     forwDir = m_ThirdPersonPlayer.m_Camera.transform.forward;
+                    //那个方向是右方
                     rightDir = m_ThirdPersonPlayer.m_Camera.transform.right;
                 }
                 move = v * forwDir + h * rightDir;
+                //WASD移动前后左右 是针对摄像机，
 
                 if (move == Vector3.zero)
                 {
@@ -415,21 +425,21 @@ namespace MLSpace
                 }
                 move.y = 0.0f;
 
-                m_TargetDirection = move.normalized;
+                m_TargetDirection = move.normalized; //当前帧往哪个方向移动
                 float angleDiff = Vector3.Angle(m_PrevTargetDirection, m_TargetDirection);
                 if (angleDiff > CHANGE_TARGET_ANGLE_BUFFER)
                 {
                     m_ChangeTarget = true;
                 }
-                m_PrevTargetDirection = m_TargetDirection;
+                m_PrevTargetDirection = m_TargetDirection; //上一帧要往哪个方向移动
 
 
                 bool blocking = false;
-                if (!dive && !m_Character.isDiving)
+                if (!dive && !m_Character.isDiving)//没有按下dive滚动键，也没有正在滚动状态
                 {
 
                     m_Animator.SetBool(HashIDs.BlockBool /*"pBlock"*/, false);
-                    if (block)
+                    if (block)//按下了block按键
                     {
                         if (m_Character.isOnGround)
                         {
@@ -443,7 +453,6 @@ namespace MLSpace
                         }
                     }
 
-
                     if (!blocking && !takingHit)
                     {
                         m_Animator.SetBool(HashIDs.BlockBool /*"pBlock"*/, false);
@@ -453,8 +462,8 @@ namespace MLSpace
                     {
                         m_Animator.SetBool(HashIDs.BlockBool /*"pBlock"*/, blocking);
                         m_Animator.SetBool(/*"pAttack1"*/HashIDs.Attack1Bool, false);
-                        m_BreakCombo = true;
-                        m_Attack_combo_started = false;
+                        m_BreakCombo = true;//终端连击计数器
+                        m_Attack_combo_started = false;//连击计数器没有开始
                     }
                 }
 
@@ -463,7 +472,7 @@ namespace MLSpace
                 runToggle = Input.GetButton("WalkToggle");
                 crouch = Input.GetButton("Crouch");
 
-                if (m_Attack_combo_started)
+                if (m_Attack_combo_started) //连击计数器开始，那么不可以通过WASD移动，而是
                 {
                     h = 0;
                     v = 0;
@@ -498,10 +507,17 @@ namespace MLSpace
             // setup trigger parameters
             bool enableTriggerUse = !block && !takingHit && !m_Attack_combo_started;
             bool use = Input.GetButton("Use") && enableTriggerUse;
+            //操作
+
             // disable trigger use when picking item
             if (m_ItemPicker.highlighted)
                 m_ThirdPersonPlayer.triggers.disableUse = true;
             m_ThirdPersonPlayer.triggers.update(h, v, use, false, jump, enableTriggerUse);
+            //h摄像机的前方移动多少米，v摄像机的右方移动多少米
+            //是否成功按下（有些状态下按下无效）jump，是否按下runToggle
+            //是否成功按下滚动，crouch下蹲
+            //bodyDirection 身体前方方向-----就是模型的前方方向。
+            //hv格式化之后就是m_TargetDirection
             m_ThirdPersonPlayer.control(h, v, jump, runToggle, dive, crouch, bodyDirection, m_TargetDirection);
         }
 
@@ -591,8 +607,8 @@ namespace MLSpace
                     block = Input.GetButton("Fire2") && attackBlockCondition && !m_EquipmentScript.bowInHand;
                 }
 
-                h = Input.GetAxisRaw("Horizontal");
-                v = Input.GetAxisRaw("Vertical");
+                h = Input.GetAxisRaw("Horizontal");//人物（相对摄像机）前后移动多少值
+                v = Input.GetAxisRaw("Vertical");//左右
 
                 Vector3 move = Vector3.zero;
                 Vector3 forwDir = transform.forward;

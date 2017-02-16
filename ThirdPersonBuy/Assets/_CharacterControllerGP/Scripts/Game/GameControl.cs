@@ -53,15 +53,17 @@ namespace MLSpace
         private bool m_Paused = false;                  // is game paused flag
         private bool m_ShowInfo = false;                // show controls info text flag
         private UnityEngine.UI.Image m_startImage;      // current fade start image
-        private float m_fadeTimer = 0.0f;               // fade timer
+        private float m_fadeTimer = 0.0f;               // fade timer this value will change in game ，is a tmp value。 and maxfadetime is 1 
         private VoidFunc fadeFunc = null;               // fade callback
         private float m_fadeSpeed = 0.2f;               // fade speed
-        private float restartTimer = 0.0f;              // restart level timer
-        private float restartTime = 7.0f;               // restart max time
+
+        private float restartTimer = 0.0f;              // restart level timer， this value will change in game ，is a tmp value
+        private float restartTime = 7.0f;               // restart max time，this value will not change in game
+
         private bool restartLevel = false;              // is time to restart level
         private NPCManager m_NpcManager;                // npc manager reference
 
-        private PlayerControlBase m_Player;             // player reference
+        private PlayerControlBase m_Player;             // player reference. we controll m_Player
 
         /// <summary>
         /// Unity Start method
@@ -118,7 +120,7 @@ namespace MLSpace
         /// </summary>
         void Update()
         {
-            if (fadeFunc != null) fadeFunc();
+            if (fadeFunc != null) fadeFunc(); //fadeFunc run in update function。 actually we suggest run in croutine
             if (restartLevel)
             {
                 restartTimer += Time.deltaTime;
@@ -259,7 +261,7 @@ namespace MLSpace
             // Lerp the colour of the texture between itself and transparent.
             Color color = Color.Lerp(m_startImage.color, Color.clear, m_fadeTimer * m_fadeTimer);
             m_fade_black_image.color = color;
-            if (m_fadeTimer > 1)
+            if (m_fadeTimer > 1) //
             {
                 m_fadeTimer = 0.0f;
                 fadeFunc = null;

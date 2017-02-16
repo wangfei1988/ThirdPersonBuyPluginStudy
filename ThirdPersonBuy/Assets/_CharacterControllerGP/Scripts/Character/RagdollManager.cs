@@ -35,7 +35,8 @@ namespace MLSpace
     public class RagdollManager : MonoBehaviour
     {
         /// <summary>
-        /// Accepting hits on on certain interval enum
+        /// Accepting hits on on certain interval 间隔 enum
+        /// 被hit击中时，Character不是播放动画而是使用RagDoll
         /// </summary>
         public enum HitIntervals
         {
@@ -51,10 +52,10 @@ namespace MLSpace
         /// </summary>
         public enum RagdollState : int
         {
-            Ragdoll = 0,    // Ragdoll on, animator off
+            Ragdoll = 0,    // Ragdoll on, animator off 人物动作完全由Ragdoll控制
             Blend,          // Animator on, blending between last ragdoll and current animator transforms
             GettingUpAnim,  // Get up animation after ragdoll
-            Animated,       // Animator full on
+            Animated,       // Animator full on。任务动作完全由Animator动画控制
         }
 
         /// <summary>

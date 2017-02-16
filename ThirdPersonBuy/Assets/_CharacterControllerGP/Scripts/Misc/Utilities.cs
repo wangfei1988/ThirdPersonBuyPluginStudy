@@ -35,8 +35,8 @@ namespace MLSpace
     /// </summary>
     public class TimedFunc
     {
-        public float time = 1.0f;
-        public float timer = 0.0f;
+        public float time = 1.0f;//等待1秒之后就会调用func
+        public float timer = 0.0f;//已经等待了多久
         public bool repeat = false;
         public VoidFunc func;
     }
