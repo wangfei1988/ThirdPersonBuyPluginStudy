@@ -1,3 +1,0 @@
-# ThirdPersonBuyPluginStudy
-PluginStudy
-不改变任何脚本名字，不做很大修改，尽量保持原汁原味并加上自己对作者插件的理解

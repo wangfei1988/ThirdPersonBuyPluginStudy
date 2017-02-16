@@ -15,12 +15,12 @@ namespace MLSpace
         public Transform transform;
 
         /// <summary>
-        /// start position of ledge
+        /// start position of ledge 起点
         /// </summary>
         public Vector3 leftPoint;
 
         /// <summary>
-        /// end position of ledge
+        /// end position of ledge 终点
         /// </summary>
         public Vector3 rightPoint;
 
@@ -37,6 +37,7 @@ namespace MLSpace
 
     /// <summary>
     /// main class for manipulating third person characters
+    /// 最为核心的类
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
@@ -51,11 +52,11 @@ namespace MLSpace
         /// <summary>
         /// move modes
         /// </summary>
-        public enum MovingMode { RotateToDirection, Strafe, Ledge };
+        public enum MovingMode { RotateToDirection, Strafe, Ledge }; //Strafe惩罚
 
 
 
-#region Fields
+        #region Fields
 
         /// <summary>
         /// layers which collide with character capsule
@@ -64,15 +65,15 @@ namespace MLSpace
         public LayerMask layers;
 
         /// <summary>
-        /// turn speed when moving
+        /// turn speed when moving （相对身体）只能往前方移动，当然头可以左右摇动
         /// </summary>
         [Tooltip("Turn speed when moving.")]
         public float movingTurnSpeed = 360;
 
         /// <summary>
-        /// turn speed when stationary
+        /// turn speed when stationary静止的
         /// </summary>
-        [Tooltip("Turn speed when stationary.")]
+        [Tooltip("Turn speed when stationary .")]
         public float stationaryTurnSpeed = 180;
 
         /// <summary>
@@ -96,12 +97,13 @@ namespace MLSpace
 
         /// <summary>
         /// distance from ground at which character will start falling animation
+        /// 少于这个距离会开始着陆动画，并且认为character在ground上面
         /// </summary>
         [Tooltip("Distance from ground at which character will start falling animation.")]
         public float groundCheckDistance = 0.1f;
 
         /// <summary>
-        /// determines the max speed of the character while airborne
+        /// determines the max speed of the character while airborne 空运
         /// </summary>
         [Tooltip("Determines the max speed of the character while airborne.")]
         public float airSpeed = 6;
@@ -125,14 +127,16 @@ namespace MLSpace
         public bool enableJumping = true;
 
         /// <summary>
-        /// enable / disable crouching
+        /// enable / disable crouching蹲伏
         /// </summary>
         [Tooltip("Enable / disable crouching.")]
         public bool enableCrouching = true;
 
 
         [SerializeField]
-        private float m_RunCycleLegOffset = 0.2f;       //specific to the current character animation, will need to be modified to work with others
+        private float m_RunCycleLegOffset = 0.2f;       
+        //specific to the current character animation, will need to be modified to work with others
+        //播放一次run动画，对象位移多少
 
         /// <summary>
         /// disable / enable capsule scale
@@ -146,7 +150,8 @@ namespace MLSpace
         [HideInInspector]
         public bool simulateRootMotion = true;      
 
-        private MovingMode m_MoveMode = MovingMode.RotateToDirection;   // move mode ( walk, strafe, ledge )
+        private MovingMode m_MoveMode = MovingMode.RotateToDirection;
+        // MovingMode.RotateToDirection; 往某个方向移动，首先会把身子转向那个方向。 
 
         // REQUIRED COMPONENTS
         private Rigidbody m_Rigidbody;              // rigid body used for movement  
@@ -159,11 +164,13 @@ namespace MLSpace
         private Collider m_CurrentGroundCollider = null; // storing current ground collider
         private const float k_Half = 0.5f;          // helper
         private bool m_IsGrounded;                  // is character on ground ?      
-        private float m_OrigGroundCheckDistance;    // original ground check distance ( will be changed and reverted)
-        private float m_AirGroundCheck = 0.1f;      // Ground Check distance when in air
-        private float m_SideAmount;                 // turn / strafe amount
+        private float m_OrigGroundCheckDistance;    // original ground check distance ( will be changed and reverted恢复)
+        //非跳跃状态，和地面距离<m_OrigGroundCheckDistance,算作落地
+        private float m_AirGroundCheck = 0.1f;     
+        // Ground Check distance when in air  跳跃状态，和地面距离少于0.1，算作在地面
+        private float m_SideAmount;                 // turn / strafe amount  转头转动角度
         private float m_ForwardAmount;              // forward amount
-        private Vector3 m_GroundNormal;             // current ground normal
+        private Vector3 m_GroundNormal;             // current ground normal法线
         private float m_CapsuleHeight;              // collider capsule height
         private Vector3 m_CapsuleCenter;            // collider capsule center
         private bool m_Crouching;                   // is player crouching flag
@@ -173,7 +180,7 @@ namespace MLSpace
         private Vector3 m_currentHeadLookPos;       // The current position where the character head is looking
         private Vector3 m_currentBodyDirection;     // The current direction where the character body is looking
         private bool m_DisableGroundCheck = false;      // disables ground check
-        private bool m_DisableGroundPull = false;       // disable ground pull (character get pulled towards ground if character is grounded and distance from ground is too high)
+        private bool m_DisableGroundPull = false;       // disable ground pull (character get pulled towards拉向 ground if character is grounded and distance from ground is too high)
         private float m_DistanceFromGround = 0.0f;      // current distance from ground   
         private Vector3 m_MoveWS = Vector3.zero;        // current move velocity world space
         private float m_DampTime = 0.1f;                // animator blend tree blend time
@@ -198,7 +205,7 @@ namespace MLSpace
         public VoidFunc OnSetTransform;          // event which will be called on transform set
         private Vector3? m_PositionToSet = null;    // position to set on set transform / on lerp end
         private Quaternion? m_RotationToSet = null; // rotation to set on set transform / on lerp end
-        private bool m_LerpToTransformFlag = false; // floag to lerping
+        private bool m_LerpToTransformFlag = false; // flag to lerping
         private float m_LerpPosTime = 0.0f,
             m_LerpRotTime = 0.0f;                   // helpers on lerp position
         private float m_LerpPosMaxTime = 1.0f,
@@ -216,7 +223,7 @@ namespace MLSpace
         // ledge helpers
         private Ledge m_CurrentLedge;               // current ledge 
         private bool m_IsInsideLedge = false;       // is character inside ledge ends
-        private bool m_WaitForNextTurn = false;     // helper for stabilizing character
+        private bool m_WaitForNextTurn = false;     // helper for stabilizing 稳定character
         private int m_CurrentGroundLayer = -1;      // current ground layer ( duh )
         private bool m_OnLedgeEdgeA = false,
             m_OnLedgeEdgeB = false;                 // sets to true if character is on one of ledge ends
@@ -244,7 +251,7 @@ namespace MLSpace
         public float moveSpeedMultiplier = 1.0f;
 
         /// <summary>
-        /// slope speed multipler ( used by slope control script )
+        /// slope斜坡 speed multipler ( used by slope control script )
         /// </summary>
         [HideInInspector]
         public float slopeMultiplier = 1.0f;
@@ -452,7 +459,7 @@ namespace MLSpace
                 RigidbodyConstraints.FreezeRotationZ;
             m_OrigGroundCheckDistance = groundCheckDistance;
 
-            forceMaxFrictionMaterial = false;
+            forceMaxFrictionMaterial = false; //Friction摩擦
             forceZeroFrictionMaterial = false;
 
             m_initialized = true;
@@ -481,7 +488,7 @@ namespace MLSpace
                 return;
             }
 #endif
-            m_Capsule.material = m_defines.zeroFrictionMaterial;
+            m_Capsule.material = m_defines.zeroFrictionMaterial;//当前碰撞体的物理摩擦材质
         }
 
         /// <summary>
@@ -508,11 +515,11 @@ namespace MLSpace
             if (m_IKMode == mode) return;
             switch (mode)
             {
-                case IKMode.Head:
+                case IKMode.Head: //
                     m_headIKincrement = true;
-                    m_cur_bodyhead_ik_weight = 0.0f;
-                    m_ik_head_weight = 0.75f;
-                    m_ik_body_weight = 0.25f;
+                    m_cur_bodyhead_ik_weight = 0.0f; //IK效果作用于全身权重
+                    m_ik_head_weight = 0.75f; //作用于头部权重
+                    m_ik_body_weight = 0.25f; //作用于身体权重
                     break;
                 case IKMode.Waist:
                     m_headIKincrement = true;
@@ -542,7 +549,7 @@ namespace MLSpace
         }
 
         /// <summary>
-        /// set character move mode
+        /// set character move mode  Strafe惩罚
         /// </summary>
         /// <param name="mmode">new move mode</param>
         public void setMoveMode(MovingMode mmode)
@@ -621,12 +628,12 @@ namespace MLSpace
         /// <summary>
         /// main character move function
         /// </summary>
-        /// <param name="move">move velocity</param>
+        /// <param name="move">move velocity 移动方向</param>
         /// <param name="crouch">crouch flag</param>
         /// <param name="jump">jump flag</param>
-        /// <param name="rotateDir">body rotation direction</param>
-        /// <param name="headLookPos">head look position</param>
-        /// <param name="turn">turn amount nullable</param>
+        /// <param name="rotateDir">body rotation direction  身体应该往哪个方向转（一般和移动方向一致）</param>
+        /// <param name="headLookPos">head look position，  头当前看向哪个方向（已经计算好了）</param>
+        /// <param name="side">turn amount nullable</param>
         public void move(Vector3 move, bool crouch, bool jump, bool diveRoll,
             Vector3 rotateDir, Vector3 headLookPos, float? side = null, Vector3? diveDirection = null)
         {
@@ -642,22 +649,18 @@ namespace MLSpace
             if (m_LerpToTransformFlag)
                 return;
             if (m_WaitForNextTurn) return;
-
-
-
             if (isDiving)
             {
                 return;
-            }
-
-
+            }            
             if (move.magnitude > 1f) move.Normalize();
             move.y = 0.0f;
             m_MoveWS = move;
 
             jump = jump && m_JumpAllowed && enableJumping && !m_LowHeadroom;
+            //是否开始进入Jump状态
             crouch = crouch && enableCrouching;
-
+            //是否开始进入crouch状态
             if (diveRoll && isGroundMode && (m_MoveMode == MovingMode.RotateToDirection || m_MoveMode == MovingMode.Strafe) )
             {
                 Vector3 diveDir = (diveDirection.HasValue ? diveDirection.Value : move);
@@ -675,14 +678,9 @@ namespace MLSpace
                 // convert the world relative moveInput vector into a local-relative
                 // turn amount and forward amount required to head in the desired
                 // direction.
-                Vector3 localMove = transform.InverseTransformDirection(move);
+                Vector3 localMove = transform.InverseTransformDirection(move);//转化为局部坐标
                 Vector3 localRotationDir = transform.InverseTransformDirection(m_currentBodyDirection);
                 m_ForwardAmount = localMove.z;
-
-                
-
-
-
                 switch (m_MoveMode)
                 {
                     case MovingMode.Strafe:
@@ -713,6 +711,7 @@ namespace MLSpace
                                 float atan2 = 0.0f;
                                 if (localRotationDir != Vector3.zero)
                                     atan2 = Mathf.Atan2(localRotationDir.x, localRotationDir.z);
+                                //这个atan2函数曲率很陡，也就是刚开始砖头慢，后面很快
                                 m_SideAmount = atan2;
                             }
                         }
@@ -1297,7 +1296,7 @@ namespace MLSpace
         }
 
         /// <summary>
-        /// movement in air
+        /// movement in air。 在空中可以控制移动方向
         /// </summary>
         /// <param name="moveInput">move velocity</param>
         private void _handleAirborneMovement(ref Vector3 moveInput)
@@ -1312,17 +1311,21 @@ namespace MLSpace
             // we allow some movement in air, but it's very different to when on ground
             // (typically allowing a small change in trajectory)
             Vector3 airMove = new Vector3(moveInput.x * airSpeed, m_Rigidbody.velocity.y, moveInput.z * airSpeed);
+            //真实移动是通过rigidbody，这里只是计算输出，并得出对rigidbody应该添加的速度
             m_Rigidbody.velocity = Vector3.Lerp(m_Rigidbody.velocity, airMove, Time.deltaTime * airControl);
+            //在空中操作移动是不是地面那么自由，他是差值。当前已有移动和玩家控制的移动之间的差值
 
-            // apply extra gravity from multiplier:
+            // apply extra gravity from multiplier:  gravityMultiplier为2就相当于1
             Vector3 extraGravityForce = (Physics.gravity * gravityMultiplier) - Physics.gravity;
             m_Rigidbody.AddForce(extraGravityForce);
 
+            //所有移动都是通过rigidbody 物理系统。 速度少于0说明非跳跃状态（移动，翻越（动画效果）），groundCheckDistance就是m_OrigGroundCheckDistance
+            //否则是跳跃状态
             groundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : m_AirGroundCheck;
         }
 
         /// <summary>
-        /// movement on ground
+        /// movement on ground 地面移动
         /// </summary>
         /// <param name="move">move velocity</param>
         /// <param name="crouch">crouch flag</param>
@@ -1345,7 +1348,7 @@ namespace MLSpace
                 m_Jumped = true;
                 Vector3 velocity = move; 
                 velocity.y = jumpPower;
-                m_Rigidbody.velocity = velocity;
+                m_Rigidbody.velocity = velocity; //移动是通过rigidbody
                 groundCheckDistance = m_AirGroundCheck;
                 m_Audio.playJumpSound();
             }
@@ -1422,13 +1425,13 @@ namespace MLSpace
             switch (m_MoveMode)
             {
                 case MovingMode.Strafe:
-                case MovingMode.Ledge:
+                case MovingMode.Ledge://这两种模式下 
                     {
                         m_SideAmount = m_StrafeAmount + Mathf.Clamp(m_SideAmount, -0.1f, 0.1f);
                     }
                     break;
             }
-
+            //阻抑
             m_Animator.SetFloat(/*"pSide"*/HashIDs.SideFloat, m_SideAmount, m_DampTime, Time.deltaTime);
             m_Animator.SetBool(/*"pCrouch"*/HashIDs.CrouchBool , m_Crouching);
             if (!m_IsGrounded)

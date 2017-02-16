@@ -49,7 +49,7 @@ namespace MLSpace
         /// user defence value
         /// subtracted from damage received
         /// </summary>
-        [Tooltip ("User's defence value. Subtracted from received damage.")]
+        [Tooltip ("User's defence value. Subtracted  扣除from received damage.")]
         public int defence = 0;
 
 
