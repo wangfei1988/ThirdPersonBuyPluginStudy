@@ -1,16 +1,16 @@
-﻿// © 2016 Mario Lelas
+﻿ 
 using UnityEngine;
 
 namespace MLSpace
 {
     /// <summary>
-    /// Camera Controller
+    /// Camera Controller  Orbit轨道; 眼眶
     /// </summary>
     public class OrbitCameraController : BaseCamera
     {
 
         /// <summary>
-        /// types of constraints
+        /// types of constraints  限制
         /// </summary>
         public enum CameraConstraint { Free, Limited };
 
@@ -66,22 +66,28 @@ namespace MLSpace
         public float maxZ = 10;
 
         /// <summary>
-        /// camera zoom step
+        /// camera zoom step 滚轮滚动一下，摄像机和目标（player）的距离变换多少
         /// </summary>
         public float zStep = 0.5f;
 
         private ProtectFromWalls m_ProtectFromWalls;    // refernce to protect from walls script
-        private Transform m_currentTransform;   // current target transform
+        private Transform m_currentTransform;
+        // current target transform
+        //当前摄像机看着哪个目标，一般是player
         private float m_totalXAngleDeg = 0;     // current x angle in degrees
         private float m_totalYAngleDeg = 0;     // current y angle in degrees
         private float m_currentZ;               // camera current zoom
-        private Vector3 m_CurrentTargetPos;     // camera target position
+        private Vector3 m_CurrentTargetPos;     // camera target position 
+        //当前帧摄像机看着哪个点
         private Vector3 m_offsetPosition;       // camera offset from target
         private Vector3 m_startingPosition;     // camera start offset from target
         private float m_switchSpeed = 1f;       // camera target switch speed
-        private float m_lerpTime = 0.0f;        // camera target switch current time
+        private float m_lerpTime = 0.0f;        
+        // camera target switch current time ，切换摄像机看的目标已经花了多长时间
         private float m_lerpMaxTime = 0.5f;     // camera target switch max time
-        private Transform m_oldTransform;       // old target transform for use when switching targets ( lerp)
+        private Transform m_oldTransform;
+        // old target transform for use when switching targets ( lerp)
+        //摄像机看的目标 从一个目标切换另外一个，保存原来的索引
         private bool m_switchingTargets;        // switch target flag
         private bool m_disableInput = false;    // disabling input flag
         private bool m_initialized = false;     // is component initialized ?
@@ -185,7 +191,7 @@ namespace MLSpace
 
             m_CurrentTargetPos = m_currentTransform.position;
 
-            if (m_switchingTargets)
+            if (m_switchingTargets)//正在切换目标
             {
                 m_lerpTime += Time.deltaTime * m_switchSpeed;
 
@@ -232,7 +238,7 @@ namespace MLSpace
                     m_totalYAngleDeg,
                     0
                 );
-            rotation = rotation * m_StartRotationY;
+            rotation = rotation * m_StartRotationY; //相乘就是角度变化叠加
             if (m_AdditiveRot)
             {
                 rotation = transform.parent.rotation * rotation;
@@ -244,7 +250,7 @@ namespace MLSpace
             transform.position  = m_CurrentTargetPos + (m_offsetPosition * m_currentZ);
 
 
-            transform.LookAt(m_CurrentTargetPos);
+            transform.LookAt(m_CurrentTargetPos); //这个只是旋转
         }
 
 #endregion

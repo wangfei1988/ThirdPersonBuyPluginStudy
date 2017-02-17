@@ -11,7 +11,7 @@ namespace MLSpace
     [RequireComponent(typeof(OrbitCameraController))]
     public class ProtectFromWalls : MonoBehaviour
     {
-        public LayerMask mask;
+        public LayerMask mask; //哪些layer算作是wall
         public float clipMoveTime = 0.05f;              // time taken to move when avoiding cliping (low value = fast, which it should be)
         public float returnTime = 0.4f;                 // time taken to move back towards desired position, when not clipping (typically should be a higher value than clipMoveTime)
         public float sphereCastRadius = 0.1f;           // the radius of the sphere used to test for object between camera and target
@@ -46,7 +46,8 @@ namespace MLSpace
         }
 
         /// <summary>
-        /// Unity LateUpdate method
+        /// Unity LateUpdate method  这个肯定是在Camera的Update方法之后。 
+        /// 每一帧，先是各种update，最后才是渲染
         /// is called every frame, if the Behaviour is enabled
         /// </summary>
         private void LateUpdate()

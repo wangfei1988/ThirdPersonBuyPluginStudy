@@ -16,7 +16,7 @@ namespace MLSpace
         public Camera cameraComponent { get { return m_CameraComponent; } }
 
         /// <summary>
-        /// default camera target transform
+        /// default camera target transform 
         /// </summary>
         [Tooltip("Target that camera will look at")]
         public Transform Target;
